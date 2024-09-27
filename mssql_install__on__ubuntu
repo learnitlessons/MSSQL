@@ -1,1 +1,5 @@
-sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=VeryStr0ngP@ssw0rd" --name sql -p 1433:1433 -v sql_server:/var/opt/mssql -d --restart=always --hostname sql --platform linux/amd64 -d mcr.microsoft.com/mssql/server:2022-latest
+curl -sSL https://get.docker.com/ | sudo sh
+sudo apt-get update && sudo apt-get upgrade
+sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Somepass1" --name sql -p 1433:1433 -v sql_server:/var/opt/mssql -d --restart=always --hostname sql --platform linux/amd64 -d mcr.microsoft.com/mssql/server:2022-latest
+
+
