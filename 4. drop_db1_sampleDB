@@ -1,0 +1,29 @@
+-- First, ensure you're not connected to db1
+USE master;
+GO
+
+-- Check if the database exists
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'db1')
+BEGIN
+    -- If it exists, check if anyone is using it
+    IF (SELECT COUNT(*) FROM sys.dm_exec_sessions WHERE database_id = DB_ID('db1')) > 0
+    BEGIN
+        -- If in use, set it to single user mode
+        ALTER DATABASE db1 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    END
+
+    -- Drop the database
+    DROP DATABASE db1;
+    PRINT 'Database db1 has been dropped.';
+END
+ELSE
+BEGIN
+    PRINT 'Database db1 does not exist.';
+END
+
+-- Verify that the database has been dropped
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'db1')
+    PRINT 'Verified: Database db1 no longer exists.';
+ELSE
+    PRINT 'Error: Database db1 still exists.';
+GO
