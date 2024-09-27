@@ -1,0 +1,5 @@
+1. install vscode
+2. install mssql addon
+3. connect to 10.211.55.5 (ip can be different) 
+use: sa (user) and password (the one created in file#1)
+
