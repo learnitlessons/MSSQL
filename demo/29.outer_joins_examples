@@ -1,0 +1,16 @@
+USE AdventureWorks2022;
+GO
+
+SELECT 
+	c.CustomerID,
+	c.PersonID AS CustomerPersonID,
+	soh.SalesOrderID,
+	soh.OrderDate
+FROM
+	Sales.Customer AS c
+LEFT OUTER JOIN
+	Sales.SalesOrderHeader AS soh
+ON
+	c.CustomerID = soh.CustomerID
+WHERE
+	soh.SalesOrderID IS NULL;
