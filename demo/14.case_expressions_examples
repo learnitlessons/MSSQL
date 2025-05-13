@@ -1,0 +1,17 @@
+SELECT
+ SalesOrderID,
+ CustomerID,
+ TotalDue,
+ CASE
+  WHEN TotalDue < 1000 THEN 'Low'
+  WHEN TotalDue BETWEEN 1000 AND 5000 THEN 'Medium'
+  ELSE 'High'
+ END AS OrderCategory
+FROM
+ Sales.SalesOrderHeader
+ORDER BY
+ CASE
+  WHEN TotalDue < 1000 THEN 1
+  WHEN TotalDue BETWEEN 1000 AND 5000 THEN 2
+  ELSE 3
+ END;
