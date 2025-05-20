@@ -1,0 +1,18 @@
+USE TSQL;
+GO
+
+INSERT INTO Production.ProductsStaging (ProductID, ProductName, SupplierID, CategoryID, UnitPrice, Discontinued)
+VALUES 
+	(1, 'New Product', 1, 1, 19.99, 0),
+	(2, 'Another Product', 2, 3, 29.99, 0),
+	(999, 'Brand New Item', 3, 2, 39.99, 0);
+
+MERGE INTO Production.Products AS P
+USING Production.ProductsStaging AS S
+	ON P.ProductID = S.ProductID
+WHEN MATCHED THEN
+	UPDATE SET
+		P.Discontinued = S.Discontinued
+WHEN NOT MATCHED THEN
+	INSERT (productname, supplierid, categoryid, unitprice, discontinued)
+	VALUES (S.productname, S.supplierid, S.categoryid, S.unitprice, S.discontinued);
