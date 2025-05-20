@@ -1,17 +1,27 @@
 USE TSQL;
 GO
 
+CREATE TABLE Production.ProductsStaging (
+	ProductID int PRIMARY KEY,
+	ProductName nvarchar(40) NOT NULL,
+	SupplierID int,
+	CategoryID int,
+	UnitPrice money,
+	Discontinued bit NOT NULL
+);
+GO
+
 INSERT INTO Production.ProductsStaging (ProductID, ProductName, SupplierID, CategoryID, UnitPrice, Discontinued)
-VALUES 
+VALUES
 	(1, 'New Product', 1, 1, 19.99, 0),
 	(2, 'Another Product', 2, 3, 29.99, 0),
-	(999, 'Brand New Item', 3, 2, 39.99, 0);
+	(999, 'Brand New Product', 3, 2, 39.99, 0);
 
 MERGE INTO Production.Products AS P
 USING Production.ProductsStaging AS S
 	ON P.ProductID = S.ProductID
 WHEN MATCHED THEN
-	UPDATE SET
+	UPDATE SET 
 		P.Discontinued = S.Discontinued
 WHEN NOT MATCHED THEN
 	INSERT (productname, supplierid, categoryid, unitprice, discontinued)
