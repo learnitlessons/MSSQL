@@ -11,3 +11,5 @@ FROM dbo.employee_goals;
 
 SELECT emp_id, NULLIF(actual, goal) AS actual_if_different
 FROM dbo.employee_goals;
+
+DROP TABLE dbo.employee_goals;
