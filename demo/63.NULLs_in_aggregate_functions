@@ -7,3 +7,15 @@ INSERT INTO dbo.t1(c2) VALUES(NULL),(10),(20),(30),(40),(50);
 
 SELECT SUM(c2) AS sum_nonnulls, COUNT(*) AS count_all_rows, COUNT(c2) AS count_nonnulls, AVG(c2) AS [avg], (SUM(c2)/COUNT(*)) AS arith_avg
 FROM dbo.t1;
+
+CREATE TABLE dbo.t2 (
+	c1 INT IDENTITY NOT NULL PRIMARY KEY,
+	c2 INT NULL
+);
+
+INSERT INTO dbo.t2 VALUES(1),(10),(1),(NULL),(1),(10),(1),(NULL),(1),(10),(1),(10);
+
+SELECT AVG(c2) AS AvgWithNULLs, AVG(COALESCE(c2,0)) AS AvgWithNULLReplace
+FROM dbo.t2;
+
+DROP TABLE dbo.t1, dbo.t2;
