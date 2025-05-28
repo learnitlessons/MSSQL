@@ -1,0 +1,19 @@
+CREATE VIEW Sales.OrderByEmployeeYear
+AS
+	SELECT emp.empid AS employee,
+			YEAR(ord.orderdate) AS orderyear,
+			SUM(od.qty * od.unitprice) AS totalsales
+	FROM
+			HR.Employees AS emp
+			JOIN Sales.Orders AS ord ON emp.empid = ord.empid
+			JOIN Sales.OrderDetails AS od ON ord.orderid = od.orderid
+	GROUP BY emp.empid,
+			YEAR(ord.orderdate);
+GO
+
+SELECT employee, orderyear, totalsales
+FROM Sales.OrderByEmployeeYear
+ORDER BY employee, orderyear;
+GO
+
+DROP VIEW Sales.OrderByEmployeeYear;
