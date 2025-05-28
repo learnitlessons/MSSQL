@@ -1,0 +1,17 @@
+CREATE FUNCTION Sales.fn_LineTotal (@orderid INT)
+RETURNS TABLE
+AS
+RETURN
+	SELECT orderid, productid, unitprice, qty, discount,
+			CAST((qty * unitprice * (1 - discount)) AS DECIMAL(8, 2)) AS line_total
+	FROM Sales.OrderDetails
+	WHERE orderid = @orderid;
+GO
+
+SELECT orderid, productid, unitprice, qty, discount, line_total
+FROM Sales.fn_LineTotal(10252) AS LT;
+GO
+
+DROP FUNCTION Sales.fn_LineTotal;
+GO
+ 
