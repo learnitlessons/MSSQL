@@ -1,0 +1,19 @@
+USE TSQL;
+GO
+
+WITH EmpOrg_CTE AS (
+	-- Anchor Query
+	SELECT empid, mgrid, lastname, firstname
+	FROM HR.Employees
+	WHERE empid = 5 -- Starting "top" of the tree
+
+	UNION ALL
+
+	-- Recursive Member
+	SELECT child.empid, child.mgrid, child.lastname, child.firstname
+	FROM EmpOrg_CTE AS parent
+	JOIN HR.Employees AS child
+		ON child.mgrid = parent.empid)
+		
+SELECT empid, mgrid, lastname, firstname
+FROM EmpOrg_CTE;
