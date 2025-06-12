@@ -1,0 +1,30 @@
+USE TSQL;
+GO
+
+--CREATE FUNCTION dbo.fn_TopProductsByShipper
+--(@supplierid INT)
+--RETURNS TABLE
+--AS
+--RETURN
+--	SELECT TOP(3) productid, productname, unitprice
+--	FROM Production.Products
+--	WHERE supplierid = @supplierid
+--	ORDER BY unitprice DESC;
+-- GO
+
+-- SELECT * FROM dbo.fn_TopProductsByShipper(2);
+
+--SELECT S.supplierid, S.companyname, 
+--		P.productid, P.productname, P.unitprice
+--FROM Production.Suppliers AS S
+--CROSS APPLY dbo.fn_TopProductsByShipper(S.supplierid) AS P
+--ORDER BY S.supplierid ASC, P.unitprice DESC;
+-- GO
+
+SELECT C.custid, TopOrders.orderid, TopOrders.orderdate
+FROM Sales.Customers AS C
+OUTER APPLY
+	(SELECT TOP (3) orderid, orderdate
+	FROM Sales.Orders AS O
+	WHERE O.custid = C.custid
+	ORDER BY orderdate DESC, orderid DESC) AS TopOrders;
