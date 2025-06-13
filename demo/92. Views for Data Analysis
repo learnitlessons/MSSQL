@@ -1,0 +1,51 @@
+-- Contains Views: Production.CategorozedProducts, Sales.CategoryQtyYear, Sales.CategoryQtyYear
+
+USE TSQL;
+GO
+
+IF OBJECT_ID('Production.CategorizedProducts', 'V') IS NOT NULL DROP VIEW Production.CategorozedProducts;
+GO
+IF OBJECT_ID('Sales.CategoryQtyYear', 'V') IS NOT NULL DROP VIEW Sales.CategoryQtyYear;
+GO
+IF OBJECT_ID('Sales.OrdersByEmployeeYear', 'V') IS NOT NULL DROP VIEW SSales.CategoryQtyYear;
+GO
+
+-- Creating the CategorizedProducts View
+CREATE VIEW Production.CategorizedProducts
+AS
+	SELECT Production.Categories.categoryid AS CatID,
+			Production.Categories.categoryname AS CatName,
+			Production.Products.productname AS ProdName,
+			Production.Products.unitprice AS UnitPrice
+	FROM	Production.Categories
+			INNER JOIN Production.Products ON Production.Categories.categoryid = Production.Products.categoryid;
+GO
+
+-- Creating the CategoryQtyYear View
+CREATE VIEW Sales.CategoryQtyYear
+AS
+SELECT	c.categoryname AS Category,
+		SUM(od.qty) AS Qty,
+		YEAR(o.orderdate) AS OrderYear
+FROM	Production.Categories AS c
+		INNER JOIN Production.Products AS p ON c.categoryid = p.categoryid
+		INNER JOIN Sales.OrderDetails AS od ON p.productid = od.productid
+		INNER JOIN Sales.Orders AS o ON od.orderid = o.orderid
+GROUP BY c.categoryname, YEAR(o.orderdate);
+GO
+
+-- Creating the OrdersByEmployeeYear View
+CREATE VIEW Sales.OrdersByEmployeeYear
+AS
+SELECT emp.empid AS employee,
+		YEAR(ord.orderdate) AS orderyear,
+		SUM(od.qty * od.unitprice) AS totalsales
+FROM HR.Employees AS emp
+	JOIN Sales.Orders AS ord ON emp.empid = ord.empid
+	JOIN Sales.OrderDetails AS od ON ord.orderid = od.orderid
+GROUP BY emp.empid, YEAR(ord.orderdate);
+GO
+
+SELECT * FROM sys.views
+WHERE name IN ('CategorizedProducts', 'CategoryQtyYear', 'OrdersByEmployeeYear');
+GO
