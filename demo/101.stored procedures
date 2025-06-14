@@ -1,0 +1,34 @@
+USE TSQL;
+GO
+
+IF OBJECT_ID('Production.ProductsbySuppliers', 'P') IS NOT NULL DROP PROCEDURE Production.ProductsbySuppliers
+
+CREATE PROCEDURE	Production.ProductsbySuppliers
+(@supplierid INT)
+AS
+SELECT	productid,
+		productname,
+		categoryid,
+		unitprice,
+		discontinued
+FROM Production.Products
+WHERE	supplierid = @supplierid
+ORDER BY productid;
+GO
+
+
+ALTER PROCEDURE	Production.ProductsbySuppliers
+(@supplierid INT, @numrows BIGINT = 9223372036854775807) --largeest possible value
+AS
+SELECT	productid,
+		productname,
+		categoryid,
+		unitprice,
+		discontinued
+FROM Production.Products
+WHERE	supplierid = @supplierid
+ORDER BY productid;
+GO
+
+
+ EXEC Production.ProductsbySuppliers @supplierid = 1, @numrows = 2;
