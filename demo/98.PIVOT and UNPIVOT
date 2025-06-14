@@ -1,0 +1,17 @@
+-- Create the table
+CREATE TABLE [Sales].[PivotedCategorySales](
+	[Category] [nvarchar](15) NOT NULL,
+	[2006] [int] NULL,
+	[2007] [int] NULL,
+	[2008] [int] NULL);
+
+-- Insert pivoted data with consistent columns names
+INSERT INTO	Sales.PivotedCategorySales (Category, [2006], [2007], [2008])
+SELECT	Category, [2006], [2007], [2008]
+FROM	( SELECT Category, Qty, Orderyear FROM Sales.CategoryQtyYear) AS D
+	PIVOT(SUM(QTY) FOR orderyear IN ([2006], [2007], [2008])) AS P;
+
+-- INPIVOT the data
+SELECT category, qty, orderyear
+FROM Sales.PivotedCategorySales
+UNPIVOT(qty FOR orderyear IN([2006], [2007], [2008])) AS unpvt;
