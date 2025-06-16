@@ -1,0 +1,117 @@
+-- ========================================
+-- Stored Procedure Demo Script
+-- Database: TSQL
+-- Purpose: Demonstrate CREATE, ALTER, and DROP procedures
+-- ========================================
+
+USE TSQL;
+GO
+
+-- ========================================
+-- BLOCK 1: CREATE INITIAL PROCEDURES
+-- ========================================
+
+-- Create procedure to get products by supplier
+CREATE PROCEDURE Production.ProductsbySuppliers
+(@supplierid AS INT)
+AS
+SELECT productid,
+       productname,
+       categoryid,
+       unitprice,
+       discontinued
+FROM Production.Products
+WHERE supplierid = @supplierid
+ORDER BY productid;
+GO
+
+-- Create procedure to get customer phone with OUTPUT parameter
+CREATE PROC Sales.GetCustPhone
+(
+    @custid AS INT,
+    @phone AS NVARCHAR(24) OUTPUT
+)
+AS
+SELECT @phone = phone
+FROM Sales.Customers
+WHERE custid = @custid;
+GO
+
+-- ========================================
+-- BLOCK 2: TEST INITIAL PROCEDURES
+-- ========================================
+
+-- Test the ProductsbySuppliers procedure
+EXEC Production.ProductsbySuppliers @supplierid = 5;
+
+-- Test the GetCustPhone procedure with OUTPUT parameter
+DECLARE @customerid INT = 5, @phonenum NVARCHAR(24);
+EXEC Sales.GetCustPhone @custid = @customerid, @phone = @phonenum OUTPUT;
+SELECT @customerid AS custid, @phonenum AS phone;
+
+-- ========================================
+-- BLOCK 3: CHECK PROCEDURE EXISTENCE
+-- ========================================
+
+-- Verify procedures exist in the database
+SELECT OBJECT_ID('Sales.GetCustPhone') AS GetCustPhoneObjectID;
+SELECT OBJECT_ID('Production.ProductsbySuppliers') AS ProductsBySupplierObjectID;
+GO
+
+-- ========================================
+-- BLOCK 4: ALTER PROCEDURE DEMO
+-- ========================================
+
+-- Demonstrate ALTER PROC - modify existing procedure
+ALTER PROC Sales.GetCustPhone
+(@custid AS INT,
+ @phone AS NVARCHAR(24) OUTPUT)
+AS
+-- Added SET NOCOUNT ON for better performance
+SET NOCOUNT ON;
+SELECT @phone = phone
+FROM Sales.Customers
+WHERE custid = @custid;
+GO
+
+-- ========================================
+-- BLOCK 5: TEST ALTERED PROCEDURE
+-- ========================================
+
+-- Test altered procedure to ensure it still works
+DECLARE @customerid2 INT = 3, @phonenum2 NVARCHAR(24);
+EXEC Sales.GetCustPhone @custid = @customerid2, @phone = @phonenum2 OUTPUT;
+SELECT @customerid2 AS custid, @phonenum2 AS phone;
+
+-- ========================================
+-- BLOCK 6: CLEANUP - DROP PROCEDURES
+-- ========================================
+
+-- Clean up: Drop procedures if they exist
+-- Note: 'P' parameter specifies we're looking for Procedures
+IF OBJECT_ID('Production.ProductsbySuppliers', 'P') IS NOT NULL
+    DROP PROC Production.ProductsbySuppliers;
+
+IF OBJECT_ID('Sales.GetCustPhone', 'P') IS NOT NULL
+    DROP PROC Sales.GetCustPhone;
+
+-- ========================================
+-- BLOCK 7: VERIFY CLEANUP
+-- ========================================
+
+-- Verify procedures have been dropped
+SELECT
+    CASE
+        WHEN OBJECT_ID('Sales.GetCustPhone', 'P') IS NULL
+        THEN 'Sales.GetCustPhone successfully dropped'
+        ELSE 'Sales.GetCustPhone still exists'
+    END AS CleanupStatus1,
+    CASE
+        WHEN OBJECT_ID('Production.ProductsbySuppliers', 'P') IS NULL
+        THEN 'Production.ProductsbySuppliers successfully dropped'
+        ELSE 'Production.ProductsbySuppliers still exists'
+    END AS CleanupStatus2;
+
+-- ========================================
+-- END OF DEMO SCRIPT
+-- ========================================
