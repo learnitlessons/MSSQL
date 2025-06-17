@@ -1,0 +1,23 @@
+USE TSQL;
+GO
+
+IF OBJECT_ID('Production.ProdsByCategory', 'P') IS NOT NULL
+	DROP PROC Production.ProdsByCategory;
+GO
+
+CREATE PROC Production.ProdsByCategory
+(@numrows AS INT, @catid AS INT)
+AS
+SELECT TOP(@numrows) productid, productname, unitprice
+FROM Production.Products
+WHERE categoryid = @catid;
+GO
+
+DECLARE @numrows INT = 3, @catid INT = 2;
+EXEC Production.ProdsByCategory @numrows = @numrows, @catid = @catid;
+GO
+
+IF OBJECT_ID('Production.ProdsByCategory', 'P') IS NOT NULL
+	DROP PROC Production.ProdsByCategory;
+GO
+
