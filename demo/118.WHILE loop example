@@ -1,0 +1,12 @@
+USE TSQL;
+GO
+
+DECLARE @empid AS INT, @lname AS NVARCHAR(20);
+SET @empid = 1;
+
+WHILE @empid <= 5
+BEGIN
+	SELECT @lname = lastname FROM HR.Employees WHERE empid = @empid;
+	PRINT @lname;
+	SET @empid += 1; -- Increment operator introduced in SQL Server 2008
+END;
