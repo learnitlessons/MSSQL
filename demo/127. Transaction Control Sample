@@ -1,0 +1,40 @@
+USE TSQL;
+GO
+
+-- Proper Transaction Handling
+BEGIN TRY
+	-- Start an explicit transaction
+	BEGIN TRANSACTION;
+	-- Insert oders (parent records)
+	INSERT INTO dbo.SimpleOrders(custid, empid, orderdate) VALUES (68,9,'2006-07-12');
+	INSERT INTO dbo.SimpleOrders(custid, empid, orderdate) VALUES (88,3,'2006-07-15');
+	-- Insert oders (child records)
+	INSERT INTO dbo.SimpleOrderDetails(orderid,productid,unitprice,qty) VALUES (1, 2,15.20,20);
+	INSERT INTO dbo.SimpleOrderDetails(orderid,productid,unitprice,qty) VALUES (999, 77,15.20,20); -- This will cause an error
+
+	-- If we reach here, everything succeeded
+	COMMIT TRANSACTION;
+	PRINT 'All operations completed successfully'
+
+END TRY
+BEGIN CATCH
+	-- If any error occures, undo ALL changes
+	IF @@TRANCOUNT > 0
+		ROLLBACK TRANSACTION;
+	-- Report the error details
+	SELECT 
+		ERROR_NUMBER() AS ErrNum, 
+		ERROR_MESSAGE() AS ErrMsg,
+		ERROR_LINE() AS ErrLine,
+		ERROR_PROCEDURE() AS ErrProc;
+
+	PRINT 'Transaction rolled back to error!';
+END CATCH;
+
+SELECT orderid, custid, empid, orderdate FROM dbo.SimpleOrders;
+SELECT orderid, productid, unitprice, qty FROM dbo.SimpleOrderDetails;
+
+IF OBJECT_ID('dbo.SimpleOrderDetails', 'U') IS NOT NULL
+	DROP TABLE dbo.SimpleOrderDetails;
+IF OBJECT_ID('dbo.SimpleOrders', 'U') IS NOT NULL
+	DROP TABLE dbo.SimpleOrders;
