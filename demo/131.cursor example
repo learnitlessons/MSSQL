@@ -1,0 +1,51 @@
+USE TSQL;
+GO
+
+-- Declare local variables for current and previous record elements
+
+DECLARE
+	@empid			AS INT			= NULL,
+	@orderdate		AS DATETIME		= NULL,
+	@prevempid		AS INT			= NULL,
+	@prevorderdate	AS DATETIME		= NULL;
+
+-- Declare table variable to hold max order date per employee
+DECLARE @T AS TABLE
+(
+	empid			INT,
+	maxorderdate	DATETIME
+);
+
+-- Declare cursor based on query that orders rows by empid and orderdate
+DECLARE OrdersCursor CURSOR FAST_FORWARD FOR
+	SELECT empid, orderdate
+	FROM Sales.Orders
+	ORDER BY empid, orderdate;
+
+-- Open cursor
+OPEN OrdersCursor;
+
+-- Fetch first cursor record
+FETCH NEXT FROM OrdersCursor INTO @empid, @orderdate;
+
+-- Process rows as long as previous fetch found a record
+WHILE @@FETCH_STATUS = 0
+BEGIN
+	-- If previous empid is different than current, insert the previous record's data
+	IF @prevempid <> @empid
+		INSERT INTO @T(empid, maxorderdate) VALUES(@prevempid, @prevorderdate);
+	SELECT @prevempid = @empid, @prevorderdate = @orderdate;
+	FETCH NEXT FROM OrdersCursor INTO @empid, @orderdate;
+END
+
+-- Insert the last record if the input table was not empty
+IF @empid IS NOT NULL
+	INSERT INTO @T(empid, maxorderdate) VALUES(@prevempid, @prevorderdate);
+
+-- Close and dealllocate cursor
+CLOSE OrdersCursor;
+DEALLOCATE OrdersCursor;
+
+-- Show results
+SELECT empid, maxorderdate
+FROM @T;
